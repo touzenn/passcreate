@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>パスワード作成</title>
+    <title>パスワード作成ページ</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -39,6 +39,9 @@
             border-radius: 4px;
             box-sizing: border-box;
         }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
         button {
             width: 100%;
             padding: 10px;
@@ -63,20 +66,28 @@
 </head>
 <body>
     <div class="container">
-        <h1>パスワード作成</h1>
+        <h1>Password Generator</h1>
         <form id="passwordForm">
             <label for="title">タイトル:</label>
             <input type="text" id="title" name="title" required>
-            <label for="length">パスワードの長さ:</label>
-            <input type="number" id="length" name="length" required min="４"　max="25">
-            <button type="submit">作成</button>
+            <label for="length">パスワードの長さ(4~25):</label>
+            <input type="number" id="length" name="length" required min="4"　max="25">
+            <div>
+                <input type="radio" id="withSymbols" name="symbolOption" value="withSymbols" checked>
+                <label for="withSymbols">記号あり</label>
+                <input type="radio" id="withoutSymbols" name="symbolOption" value="withoutSymbols">
+                <label for="withoutSymbols">記号なし</label>
+            </div>
+            <button type="submit">パスワード作成</button>
         </form>
         <div id="result"></div>
     </div>
 
     <script>
-        function getRandomPasswordString(length) {
-            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+        function getRandomPasswordString(length, includeSymbols) {
+            const alphaNumericChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const symbols = '!@#$%^&*()';
+            const characters = includeSymbols ? alphaNumericChars + symbols : alphaNumericChars;
             let password = '';
             for (let i = 0; i < length; i++) {
                 const randomIndex = Math.floor(Math.random() * characters.length);
@@ -98,13 +109,14 @@
             event.preventDefault();
             const title = document.getElementById('title').value;
             const length = parseInt(document.getElementById('length').value);
-            const password = getRandomPasswordString(length);
+            const includeSymbols = document.querySelector('input[name="symbolOption"]:checked').value === 'withSymbols';
+            const password = getRandomPasswordString(length, includeSymbols);
             const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = `<p>Title: <strong>${title}</strong></p><p>Password: <strong>${password}</strong></p>`;
 
             // ファイルとして保存する
             const content = `Title: ${title}\nPassword: ${password}`;
-            const filename = `${title.replace(' ', '_')}_pass.txt`;
+            const filename = `${title.replace(' ', '_')}_password.txt`;
             saveFile(content, filename);
         });
     </script>
